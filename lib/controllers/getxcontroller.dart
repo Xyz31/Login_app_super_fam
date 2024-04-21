@@ -4,9 +4,10 @@ class LoginController extends GetxController {
   RxString phoneNumber = "".obs;
   RxString otp = "".obs;
   RxString mainText = "Login".obs;
-  RxBool isOTPValid = false.obs;
+  RxBool isOTP6digit = false.obs;
   RxBool isOTPSent = false.obs;
   RxBool isValidNumber = false.obs;
+  RxBool isNumber10digit = false.obs;
 
   void checkValidNumber() {
     // Make Valid here
@@ -20,10 +21,20 @@ class LoginController extends GetxController {
 
   void validateOTP() {
     // Implement the logic to validate the OTP
-    isOTPValid.value = true;
+    isOTP6digit.value = true;
   }
 
   void login() {
     // Implement the login logic
+  }
+
+  void resetCredentials() {
+    mainText.value = "Login";
+    phoneNumber.value = "";
+    otp.value = "";
+    isOTPSent.value = false;
+    isOTP6digit.value = false;
+    isValidNumber.value = false;
+    isNumber10digit.value = false;
   }
 }

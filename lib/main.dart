@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pinput/pinput.dart';
 import 'package:get/get.dart';
 import 'package:super_fam_project/Screens/home_screen.dart';
 import 'package:super_fam_project/Screens/loginscreen.dart';
-// Import GetX package
 
+import 'controllers/getxcontroller.dart';
+
+// Import GetX package
 void main() {
+  // Register your controller
+  Get.put(LoginController()); // This initializes your controller globally
   runApp(const MyApp());
 }
 
@@ -15,7 +18,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: "LoginScreen",
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
+          useMaterial3: true,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          fontFamily: 'Raleway'),
+      title: "SuperFam Project",
       initialRoute: '/login',
       getPages: [
         GetPage(
@@ -24,7 +33,7 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: '/home',
-          page: () => const HomeScreen(),
+          page: () => HomeScreen(),
         ),
       ],
     );

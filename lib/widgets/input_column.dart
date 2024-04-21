@@ -1,11 +1,11 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import 'package:super_fam_project/Screens/home_screen.dart';
 import 'package:super_fam_project/controllers/getxcontroller.dart';
-import 'package:super_fam_project/widgets/custom_textfield.dart';
 import 'package:super_fam_project/widgets/show_dialog.dart';
 
 class InputColumnForLogin extends StatelessWidget {
@@ -22,8 +22,8 @@ class InputColumnForLogin extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     return Obx(
       () => Container(
-        width: width > 400 ? 400 : 300,
-        height: height > 600 ? 500 : 400,
+        width: width > 500 ? 350 : 300,
+        // height: width > 500 ? 400 : 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(9),
         ),
@@ -41,17 +41,15 @@ class InputColumnForLogin extends StatelessWidget {
                     controller.mainText.value,
                     style: const TextStyle(
                       fontSize: 30,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.orangeAccent,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   _enterPhoneTextField(context),
                   const SizedBox(
                     height: 10,
                   ),
-                  if (controller.isValidNumber.value &&
-                      !controller.isOTPValid.value)
-                    _enterOTPField(context),
+                  if (controller.isValidNumber.value) _enterOTPField(context),
                   const SizedBox(
                     height: 10,
                   ),
@@ -62,21 +60,24 @@ class InputColumnForLogin extends StatelessWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.only(left: 10),
                         decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.7),
+                          color: controller.isNumber10digit.value == false
+                              ? Colors.grey.withOpacity(0.7)
+                              : Colors.green,
                           borderRadius: BorderRadius.circular(9),
                         ),
                         child: TextButton(
-                          onPressed: () async {
+                          onPressed: () {
                             String val = emailcontroller.text;
                             int? parsedValue = int.tryParse(val);
-                            print("Number $val");
+                            debugPrint("Number $val");
                             if (val.length != 10 || parsedValue == null) {
                               showSnackBar(context,
                                   "Enter Correct Contact number Here in Filed..");
                             } else {
                               showDetails(context, "OTP Sent To Contact.");
-                              await const Duration(seconds: 4);
+                              const Duration(seconds: 4);
                               controller.isValidNumber.value = true;
+                              controller.isOTPSent.value = true;
                               controller.mainText.value = "Enter OTP";
                             }
                           },
@@ -94,16 +95,17 @@ class InputColumnForLogin extends StatelessWidget {
                     ),
                   // if (controller.isValidNumber.value)
                   // _enterOTPField(context),
-                  if (controller.isValidNumber.value &&
-                      !controller.isOTPSent.value)
+                  if (controller.isValidNumber.value)
                     Align(
                       alignment: Alignment.centerRight,
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.only(left: 10),
                         decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(9),
+                          borderRadius: BorderRadius.circular(8),
+                          color: controller.isOTP6digit.value
+                              ? Colors.green
+                              : Colors.grey,
                         ),
                         child: TextButton(
                           onPressed: () {
@@ -112,11 +114,23 @@ class InputColumnForLogin extends StatelessWidget {
                               showSnackBar(context, "Enter Correct OTP.");
                             } else {
                               controller.validateOTP();
-                              Get.toNamed('/home');
+                              controller.phoneNumber.value =
+                                  emailcontroller.text;
+                              controller.otp.value = otpcontroller.text;
+
+                              // String num = controller.phoneNumber.value;
+                              // String otp = controller.otp.value;
+
+                              final route = CupertinoPageRoute(
+                                  builder: (context) =>
+                                      // HomeScreen(num: num, otp: otp));
+                                      HomeScreen());
+                              Navigator.pushAndRemoveUntil(
+                                  context, route, (route) => false);
                             }
                           },
                           child: const Text(
-                            'Validate OTP',
+                            'Login',
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Colors.white,
@@ -141,6 +155,16 @@ class InputColumnForLogin extends StatelessWidget {
 
   Widget _enterPhoneTextField(context) {
     return TextField(
+      onChanged: (value) {
+        // print(value);
+        int? parsedValue = int.tryParse(value);
+        if (value.length == 10 && parsedValue != null) {
+          controller.phoneNumber.value = value;
+          controller.isNumber10digit.value = true;
+        } else {
+          controller.isNumber10digit.value = false;
+        }
+      },
       controller: emailcontroller,
       cursorWidth: 1,
       cursorColor: Colors.white,
@@ -155,7 +179,7 @@ class InputColumnForLogin extends StatelessWidget {
         hintText: "Contact",
         hintStyle: TextStyle(
           letterSpacing: 1,
-          fontSize: 10,
+          fontSize: 16,
           color: Colors.white.withOpacity(0.8),
         ),
         contentPadding:
@@ -168,12 +192,15 @@ class InputColumnForLogin extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           borderSide: const BorderSide(color: Colors.orange, width: 2),
         ),
-        prefixIcon: const Icon(Icons.call),
+        prefixIcon: const Icon(
+          Icons.call,
+          color: Colors.white,
+        ),
         suffixIcon: GestureDetector(
             onTap: () {
-              showDetails(context, "info");
+              showDetails(context, "Enter your contect");
             },
-            child: const Icon(Icons.info)),
+            child: const Icon(Icons.info, color: Colors.white)),
       ),
     );
   }
@@ -188,7 +215,7 @@ class InputColumnForLogin extends StatelessWidget {
       height: 56,
       textStyle: const TextStyle(
         fontSize: 22,
-        color: Color.fromRGBO(30, 60, 87, 1),
+        color: Colors.grey,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(19),
@@ -202,15 +229,21 @@ class InputColumnForLogin extends StatelessWidget {
       listenForMultipleSmsOnAndroid: true,
       defaultPinTheme: defaultPinTheme,
       separatorBuilder: (index) => const SizedBox(width: 8),
-      validator: (value) {
-        return value == '123456' ? null : 'Pin is incorrect';
-      },
+      // validator: (value) {
+      //   return 'Correct pin for Testiing only $value';
+      // },
       hapticFeedbackType: HapticFeedbackType.lightImpact,
       onCompleted: (pin) {
         debugPrint('onCompleted: $pin');
       },
       onChanged: (value) {
-        debugPrint('onChanged: $value');
+        // debugPrint('onChanged: $value');
+        if (value.length == 6) {
+          controller.otp.value = value;
+          controller.isOTP6digit.value = true;
+        } else {
+          controller.isOTP6digit.value = false;
+        }
       },
       cursor: Column(
         mainAxisAlignment: MainAxisAlignment.end,
