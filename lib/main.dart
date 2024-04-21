@@ -9,6 +9,7 @@ import 'controllers/getxcontroller.dart';
 void main() {
   // Register your controller
   Get.put(LoginController()); // This initializes your controller globally
+
   runApp(const MyApp());
 }
 

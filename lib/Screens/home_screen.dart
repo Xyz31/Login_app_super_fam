@@ -133,12 +133,6 @@ class HomeScreen extends StatelessWidget {
       isRepeatingAnimation: true,
       repeatForever: true,
       onTap: () {
-        // Push a new instance of the LoginScreen route and remove all routes below it
-        Navigator.pushAndRemoveUntil(
-          context,
-          CupertinoPageRoute(builder: (BuildContext context) => LoginScreen()),
-          (route) => false,
-        );
         debugPrint("Tap Event");
       },
     );

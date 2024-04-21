@@ -1,0 +1,6 @@
+flutter_native_splash:
+  image: assets/group.png
+  color: "#1E1E1E"
+  android: true
+  ios: true
+  android_12: true
